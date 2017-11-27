@@ -7,8 +7,8 @@ import threading
 
 s = socket.socket()         # Create a socket object
 host = socket.gethostname() # Get local machine name
-port = 5001            # Reserve a port for your service.
-s.bind((host, port))        # Bind to the port
+port = 5003          # Reserve a port for your service.
+s.bind(('', port))        # Bind to the port
 
 s.listen(5)                 # Now wait for client connection.
 path = os.getcwd()
@@ -17,15 +17,10 @@ print 'Server started'
 #while True:
 c, addr = s.accept()     # Establish connection with client.
 print 'Got connection from', addr
-#c.send(str(dir))
-
 a = c.recv(1024)
-
 remove = a[1:-1]
-
 h = remove.split(", ")
 h1 = h[0].replace("'", "")
-
 f1 = h[1]
 
 if f1 == "'r'":
@@ -49,4 +44,4 @@ elif f1 == "'a'":
 
 else:
        print "Failed to Read"
-       c.close()                # Close the connection
+                    # Close the connection
