@@ -7,23 +7,14 @@ def get_list(name,sock):
     current_working_directory = os.getcwd()
     os.chdir(current_working_directory)
     files =[]
-    data=[]
     d1=[]
     files = os.listdir(current_working_directory)
-    f_name = sock.recv(2048)
-    
-    
+    f_name = sock.recv(2048)        
     if f_name in files:
         i=files.index(f_name)
-
-        data = current_working_directory+f_name+' Size '+str(os.path.getsize(files[i]))+' Bytes  Last modified ' +str(os.path.getctime(files[i]))
-        print(data)
-        
-        
+        data = current_working_directory+f_name+' Size '+str(os.path.getsize(files[i]))+' Bytes  Last modified ' +str(os.path.getctime(files[i]))      
     else:
-        data1 = 'File does not exist'
-        
-
+        data = 'File does not exist'
     data1 = data.encode()
     sock.send(data1)
     
@@ -33,7 +24,7 @@ def Main():
     host = '127.0.0.1'
     port = 5000
     s = socket.socket()
-    s.bind((host,port))
+    s.bind(('',port))
     s.listen(5)
     print('server started')
     while(True):
@@ -43,6 +34,14 @@ def Main():
         t.start()
 if __name__ == '__main__':
     Main()
+
+        
+
+    
+
+
+
+    
 
         
 
