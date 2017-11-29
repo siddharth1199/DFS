@@ -29,29 +29,24 @@ def lock(name,c):
     file_name = c.recv(1024)
     print(file_name)
     print('1')
-    cursor = conn.execute("SELECT file_name, status from FILES")
+    cursor = conn.execute("SELECT file_name, status from files_list")
+    
     print '2'
     for row in cursor:
         print '3'
+        print row[0]
+        print row[1]
         d_f = row[0]
         d_s = row[1]
         if d_f!= file_name:
-            conn.execute("INSERT INTO FILES(file_name,status)\ VALUES("+d_f+","+d_s+")");
-            print('files added')
-##    else:
-##        files[file_name]='unlocked'
-##        value = files.get(file_name)
-##        c.send(value.encode())
-##        f2 = c.recv(1024)
-##        print(f2)
-##        if f2 in files.keys():
-##            files[f2] = 'locked'
-##            print(files)
-##        f3 = c.recv(1024)
-##        if f3=='done':
-##            files[f2]= 'unlocked'
-##           # print(files)
-##    
+            print (file_name)
+            d_f = file_name
+            d_s = 'unlocked'
+            cursor = conn.execute("INSERT INTO files_list VALUES (?, ?)", (d_f, d_s))
+            conn.commit()
+  
+   
+    
         
 
 def Main():
