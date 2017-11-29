@@ -87,15 +87,15 @@ if __name__ == '__main__':
    
     host = 'localhost'
     port_dir = 5000
-    socket_dir = socket.socket()
+    socket_dir = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socket_dir.connect((host, port_dir))
 
-    socket_file = socket.socket()         
+    socket_file = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
     port_file = 5003              
     socket_file.connect((host, port_file))
 
     port_lock = 6002
-    socket_lock = socket.socket()
+    socket_lock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socket_lock.connect((host, port_lock))
     
     
