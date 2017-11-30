@@ -2,7 +2,7 @@ import socket, pickle
 from threading import Thread
 import threading
 import os
-from threading import Thread
+
 
 class client_thread(Thread):
 
@@ -17,11 +17,20 @@ class client_thread(Thread):
               
 
 def get_list(name,sock):
+    f_name = (sock.recv(2048)).decode()
+    info = (sock.recv(2048)).decode()
+    f = open(f_name,"w+")
+    f.write(info)
+    print('done')
+    f.close()
+    
     current_working_directory = os.getcwd()
     os.chdir(current_working_directory)
     files =[]
     d1=[]
     files = os.listdir(current_working_directory)
+    data=pickle.dumps(files)
+    sock.send(data)
     f_name = sock.recv(2048)        
     if f_name in files:
         i=files.index(f_name)
