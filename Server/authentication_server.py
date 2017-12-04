@@ -19,29 +19,39 @@ class client_thread(Thread):
 
 
 def auth_server(name,c):
+       inp = c.recv(2048)
        print 'started'
-       username = c.recv(1024)
-       password = c.recv(1024)
-       inp = c.recv(1024)
-       print(username, password)
+       username = c.recv(2048)
+       print 'us'
+       password = c.recv(2048)
+       print 'pw'
+       
+       print(username, password, inp)
        conn = sqlite3.connect('authen.db')
        print "Opened database successfully";
        val = ''
        p= ''
-       if inp==1:
+       i=0
+       if inp=='1':
               cursor = conn.execute("SELECT password from data WHERE username = (?)", (username,))
               for row in cursor:                     
                      p = row[0]
-              if p == '':
-                     val = 'empty'
               if p == password:
                      val = 'true'
               else:
                      val = 'false'
        if inp == '2':
-              cursor = conn.execute("INSERT INTO data VALUES (?, ?)", (username, password))
-              conn.commit()
-              val = 'true'
+              cursor = conn.execute("SELECT username from data")
+              for row in cursor:                     
+                     u = row[0]
+                     if u == username:
+                            i=1
+              if i!= 0:
+                     val = 'exists'
+              else:                            
+                     cursor = conn.execute("INSERT INTO data VALUES (?, ?)", (username, password))
+                     conn.commit()
+                     val = 'true'
        c.send(val.encode())
     
 
