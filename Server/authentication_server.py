@@ -32,6 +32,7 @@ def auth_server(name,c):
        val = ''
        p= ''
        i=0
+       print '1'
        if inp=='1':
               cursor = conn.execute("SELECT password from data WHERE username = (?)", (username,))
               for row in cursor:                     
@@ -40,7 +41,7 @@ def auth_server(name,c):
                      val = 'true'
               else:
                      val = 'false'
-       if inp == '2':
+       elif inp == '2':
               cursor = conn.execute("SELECT username from data")
               for row in cursor:                     
                      u = row[0]
@@ -52,6 +53,8 @@ def auth_server(name,c):
                      cursor = conn.execute("INSERT INTO data VALUES (?, ?)", (username, password))
                      conn.commit()
                      val = 'true'
+       else:
+              val = 'exit'
        c.send(val.encode())
     
 
