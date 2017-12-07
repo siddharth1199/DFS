@@ -44,7 +44,6 @@ def file_server(name,c):
               a1 = c.recv(1024)
               print a1
               f = open(h1, 'a')
-              #l1 = f.read(1024)
               l = f.write(a1)
               print "File Modified"
               f.close()
