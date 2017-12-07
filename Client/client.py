@@ -1,38 +1,42 @@
 import socket, pickle       
 
 def authentication():
-    input1 = raw_input("Enter 1 to login, 2 to sign up: ")
+    input1 = raw_input("Enter 1 to login, 2 to sign up, 3 to exit: ")
     socket_authen.send(input1.encode())
     username = raw_input("Enter username: ")
     socket_authen.send(username.encode())
     password = raw_input("Enter password: ")
     socket_authen.send(password.encode())
     print(username, password, input1)
-    
-    
-    
     val = (socket_authen.recv(1024)).decode()
     if val == 'true':
         directory()
     elif val == 'false':
         print 'Incorrect password'
         authentication()
-    else:
+    elif val == 'exists':
         print 'Username already exists'
         authentication()
+    else:
+        print'Program terminated'
 
 def directory():    
-    inp = raw_input('Type 1 to create a new file, and 2 to access existing file ')
+    inp = raw_input('Type 1 to create a new file, and 2 to access existing file, 3 to exit ')
+    socket_dir.send(inp.encode())
     if inp == '1':
-        f_name = raw_input('enter file name ')        
-        info = raw_input('Write data into file: ')
+        f_name = raw_input('enter file name ')
         socket_dir.send(f_name.encode())
+        info = raw_input('Write data into file: ')        
         socket_dir.send(info.encode())
-        
         data = socket_dir.recv(2048)
         files = pickle.loads(data)
+        print files
         directory()
-    else:
+    elif inp == '2':
+        print 'Files in the server: '
+        f_list = socket_dir.recv(2048)
+        f_names = pickle.loads(f_list)
+        print f_names
         file_name = raw_input("Enter File Name, type exit to terminate: ")
         socket_dir.send(file_name.encode())    
         data = socket_dir.recv(2048)
@@ -41,20 +45,14 @@ def directory():
     file_name1 = raw_input("Type open to access file and exit to quit or back to open another file ")
     if file_name1 == 'open':
         data2 = 'exit'
-        socket_dir.send(data2.encode())
+        #socket_dir.send(data2.encode())
         fileserver(file_name)
-        
     elif file_name1 == 'exit':
         file_name1.encode()
         socket_dir.send(file_name1.encode())
         print'Application Terminated'
     elif file_name1 == 'back':
-        file_name = raw_input("Enter File Name, type exit to terminate: ")
-        socket_dir.send(file_name.encode())
-        data = socket_dir.recv(2048)
-        data1 = data.decode()
-        print data1
-    socket_dir.close()
+        directory()
 
 def fileserver(f):
     
@@ -75,7 +73,8 @@ def fileserver(f):
                         print data
                         if not data:
                             break
-            
+                
+        directory()    
         f1.close()
     else:
         x= raw_input('File unlocked, read and write avaliable. Type r to read and a to append ')
@@ -100,7 +99,8 @@ def fileserver(f):
                     print data
                     if not data:                        
                         break
-            
+        directory()    
+        f1.close()    
 
                         # Close the socket when done
 
