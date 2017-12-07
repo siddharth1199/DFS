@@ -1,7 +1,13 @@
-import socket, pickle
-from threading import Thread
+import os.path
+import socket
+import select
+import sys
+from thread import *
 import threading
-import os
+from threading import Thread
+import sqlite3
+
+
 
 
 class client_thread(Thread):
@@ -13,38 +19,53 @@ class client_thread(Thread):
 
        def run(self):
               while True:
-                     get_list(self.addr,self.c)
+                     lock(self.addr,self.c)
               
 
-def get_list(name,sock):
-    f_name = (sock.recv(2048)).decode()
-    info = (sock.recv(2048)).decode()
-    f = open(f_name,"w+")
-    f.write(info)
-    print('done')
-    f.close()
-    
-    current_working_directory = os.getcwd()
-    os.chdir(current_working_directory)
-    files =[]
-    d1=[]
-    files = os.listdir(current_working_directory)
-    data=pickle.dumps(files)
-    sock.send(data)
-    f_name = sock.recv(2048)        
-    if f_name in files:
-        i=files.index(f_name)
-        data = current_working_directory+f_name+' Size '+str(os.path.getsize(files[i]))+' Bytes  Last modified ' +str(os.path.getctime(files[i]))      
+def lock(name,c):
+    conn = sqlite3.connect('test.db')
+    print "Opened database successfully";
+    d_f=[]
+    d_s=[]
+    file_name = c.recv(1024)
+    print(file_name)
+    print('1')
+    cursor = conn.execute("SELECT file_name, status from files_list")
+    i=0
+    for row in cursor:       
+        print row[0]
+        print row[1]
+        if file_name == row[0]:
+               i = i+1
+    if i==0:
+           d_f = file_name
+           d_s = 'unlocked'
+           cursor = conn.execute("INSERT INTO files_list VALUES (?, ?)", (d_f, d_s))
+           conn.commit()
     else:
-        data = 'File does not exist'
-    data1 = data.encode()
-    sock.send(data1)
-    
+           print 'file exists'
+           cursor = conn.execute("SELECT status from files_list WHERE file_name = (?)", (file_name,))
+           for row in cursor:                  
+                  d_s = row[0]
+    c.send(d_s.encode())
 
+    f_name = c.recv(1024)
+    cursor = conn.execute("UPDATE files_list SET status = 'locked' WHERE file_name = (?)",(f_name,))
+    conn.commit()
+    print('file locked')
+    inp = c.recv(1024)
+    if inp == 'done':
+           cursor = conn.execute("UPDATE files_list SET status = 'unlocked' WHERE file_name = (?)",(f_name,))
+           conn.commit()
+           
+    
+    
+    
+        
 
 def Main():
     host = '127.0.0.1'
-    port = 5000
+    port = 6002
     s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     s.bind(('',port))
     s.listen(5)
@@ -57,16 +78,7 @@ def Main():
         Thread = client_thread(addr,c)
         Thread.start()
 
+
         
-if __name__ == '__main__':
-    
+if __name__ == '__main__':    
     Main()
-    
-
-        
-
-    
-
-
-
-    
