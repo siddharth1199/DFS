@@ -11,9 +11,8 @@ Directory Server Responsible for mapping file names into identifiers used by the
 Lock Server A client asks the lock server for access to a file. Lock server checks the status of the file from an SQL database. If file is unlocked, then the client has read and write access. If file is locked, then the client has read access only. Files get locked when client has write access. Multiple clients cannot change access the file for writing at the same time.
 
 Authentication Server Basic Server that checks a database to see if a correct Username and Password were provided.
-
+I worked on the all the 4 servers (File server, Directory Server, Lock Server and Authentication server), and the client
 
 
 Siddharth Sheshadri
-CS7NS1
-
+17310763
